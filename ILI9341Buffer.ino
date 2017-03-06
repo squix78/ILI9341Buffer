@@ -16,8 +16,15 @@ struct Point {
   uint8_t color;
 };
 
-Point p[200];
-int numPoints = 200;
+uint8_t col = 0;
+
+uint16_t counter = 0;
+long startMillis = millis();
+uint16_t interval = 100;
+
+int numPoints = 600;
+Point p[600];
+
 
 void updatePoint(Point *p) {
   p->x = p->x + p->xd;
@@ -60,20 +67,16 @@ void setup() {
     if (random(2) > 0) {
       p[i].yd = p[i].yv * -1;
     }
-    p[i].color = random(15);
+    p[i].color = random(13) + 1;
   }
 
-  delay(1000);
+  startMillis = millis();
 }
-uint8_t col = 0;
 
-uint16_t counter = 0;
-long startMillis = millis();
-uint16_t interval = 100;
 void loop() {
-  tft.fillBuffer(15);
-  for (uint16_t i = 0; i < 10; i++) {
-    for (uint16_t j = 0; j < 10; j++) {
+  tft.fillBuffer(0);
+  for (uint16_t i = 0; i < 1; i++) {
+    for (uint16_t j = 0; j < 1; j++) {
       for (int k = 0; k < numPoints; k++) {
         tft.setBufferPixel(p[k].x + i, p[k].y + j, p[k].color);
       }

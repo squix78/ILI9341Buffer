@@ -711,34 +711,29 @@ void Adafruit_ILI9341::writeBuffer() {
     if (hwSPI) spi_begin();
     setAddrWindow(0, 0, _width - 1, _height -1 );
   
-    
-
     digitalWrite(_dc, HIGH);
     digitalWrite(_cs, LOW);
 
-
-
-
-    //for(y=h; y>0; y--) {
-      //for(x=w; x>0; x--) {
     uint8_t lineBuffer[_width * 2];
+    uint16_t pos;
+    uint8_t bufferByte;
+    uint8_t paletteEntry;
+    uint16_t color;
     for (uint16_t y = 0; y < _height; y++) {
 
       for (uint16_t x = 0; x < _width; x++) {
 
-        uint16_t pos = (y * _width + x) / 2;
-        uint8_t bufferByte = buffer[pos];
-        uint8_t paletteEntry = 0;
+        bufferByte = buffer[(y * _width + x) / 2];
         if (x % 2 == 0) {
           paletteEntry = bufferByte >> 4 ;
         } else {
           paletteEntry = bufferByte & 15;
         }
-        uint16_t color = palette[paletteEntry];
+        color = palette[paletteEntry];
         
-        uint8_t hi = color >> 8, lo = color;
-        lineBuffer[x * 2] = hi;
-        lineBuffer[x * 2 + 1] = lo;        
+        //uint8_t hi = color >> 8, lo = color;
+        lineBuffer[x * 2] = color >> 8;
+        lineBuffer[x * 2 + 1] = color;        
         //SPI.write16(color);
 
       }
