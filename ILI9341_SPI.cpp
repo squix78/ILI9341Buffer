@@ -13,7 +13,7 @@
   MIT license, all text above must be included in any redistribution
  ****************************************************/
 
-#include "ILI9341Buffer.h"
+#include "ILI9341_SPI.h"
 #ifdef __AVR__
   #include <avr/pgmspace.h>
 #elif defined(ESP8266) || defined(ESP32)
@@ -684,17 +684,15 @@ uint8_t Adafruit_ILI9341::readcommand8(uint8_t c, uint8_t index) {
 
 void Adafruit_ILI9341::fillBuffer(uint8_t pal) {
     memset(buffer, pal | pal << 4, sizeof(buffer));
-    return;
-    for (uint16_t x = 0; x < _width; x++) {
-      for (uint16_t y = 0; y < _height; y++) {
-        setBufferPixel(x,y, pal);
-      }
-    }  
 }
 
-void Adafruit_ILI9341::setBufferPixel(uint16_t x, uint16_t y, uint8_t palColor) {
-  if (x > _width || y > _height) return;
+void Adafruit_ILI9341::setPixel(uint16_t x, uint16_t y, uint8_t palColor) {
+  if (x >= _width || y >= _height || x < 0 || y < 0 || palColor < 0 || palColor > 15) return;
   uint16_t pos = (y * _width + x) / 2;
+  if (pos > _width * _height / 2) {
+    Serial.println(String(pos) + ", " + String(x) + ", " + String(y));
+    return;
+  }
   uint8_t mask;
   if (x % 2 == 0) {
     palColor = palColor << 4;
@@ -743,6 +741,13 @@ void Adafruit_ILI9341::writeBuffer() {
     digitalWrite(_cs, HIGH);
   
     if (hwSPI) spi_end();
+}
+
+uint16_t Adafruit_ILI9341::getScreenWidth() {
+  return ILI9341_TFTWIDTH;
+}
+uint16_t Adafruit_ILI9341::getScreenHeight() {
+  return ILI9341_TFTHEIGHT;
 }
 
 

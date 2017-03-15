@@ -1,6 +1,9 @@
 
 #include <Adafruit_GFX.h>    // Core graphics library
-#include "ILI9341Buffer.h" // Hardware-specific library
+#include "ILI9341_SPI.h" // Hardware-specific library
+#include "MiniGrafx.h"
+#include "WeatherStationFonts.h"
+
 #include <SPI.h>
 
 #define TFT_DC D2
@@ -8,6 +11,8 @@
 #define TFT_LED D8
 
 Adafruit_ILI9341 tft = Adafruit_ILI9341(TFT_CS, TFT_DC);
+MiniGrafx gfx = MiniGrafx(&tft);
+char iconMap[] = {'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O' }; 
 
 struct Point {
   uint16_t x,y;
@@ -22,7 +27,7 @@ uint16_t counter = 0;
 long startMillis = millis();
 uint16_t interval = 100;
 
-int numPoints = 600;
+int numPoints = 30;
 Point p[600];
 
 
@@ -75,13 +80,19 @@ void setup() {
 
 void loop() {
   tft.fillBuffer(0);
-  for (uint16_t i = 0; i < 1; i++) {
-    for (uint16_t j = 0; j < 1; j++) {
-      for (int k = 0; k < numPoints; k++) {
-        tft.setBufferPixel(p[k].x + i, p[k].y + j, p[k].color);
-      }
-    }
+  gfx.setFont(Meteocons_Plain_42);
+  for (int k = 0; k < numPoints - 2; k++) {
+    //tft.setBufferPixel(p[k].x + i, p[k].y + j, p[k].color);
+    //gfx.drawLine(p[k].x + i, p[k].y + j, p[k + 1].x + i, p[k + 1].y + j, p[k].color);
+    gfx.setColor(p[k].color);
+    //gfx.fillCircle(p[k].x, p[k].y, 4);
+    gfx.drawString(p[k].x, p[k].y, String(iconMap[p[k].color]));
   }
+  gfx.setColor(15);
+  gfx.setFont(ArialMT_Plain_24);
+  gfx.drawString(p[numPoints - 1].x, p[numPoints - 1].y, "ESP8266");
+  //gfx.drawString(50, 50, "H A L L O");
+
   for (int i = 0; i < numPoints; i++) {
     updatePoint(&p[i]);
   }

@@ -122,6 +122,9 @@ typedef volatile uint32_t RwReg;
 #define ILI9341_GREENYELLOW 0xAFE5      /* 173, 255,  47 */
 #define ILI9341_PINK        0xF81F
 
+#define BITS_PER_PIXEL 4
+#define PALETTE_COLORS 16
+
 class Adafruit_ILI9341 : public Adafruit_GFX {
 
  public:
@@ -131,21 +134,23 @@ class Adafruit_ILI9341 : public Adafruit_GFX {
   Adafruit_ILI9341(int8_t _CS, int8_t _DC, int8_t _RST = -1);
 
   void     begin(void),
-           setAddrWindow(uint16_t x0, uint16_t y0, uint16_t x1, uint16_t y1),
-           pushColor(uint16_t color),
-           fillScreen(uint16_t color),
-           drawPixel(int16_t x, int16_t y, uint16_t color),
-           drawFastVLine(int16_t x, int16_t y, int16_t h, uint16_t color),
-           drawFastHLine(int16_t x, int16_t y, int16_t w, uint16_t color),
-           fillRect(int16_t x, int16_t y, int16_t w, int16_t h,
-             uint16_t color),
-           setRotation(uint8_t r),
-           invertDisplay(boolean i);
+         setAddrWindow(uint16_t x0, uint16_t y0, uint16_t x1, uint16_t y1),
+         pushColor(uint16_t color),
+         fillScreen(uint16_t color),
+         drawPixel(int16_t x, int16_t y, uint16_t color),
+         drawFastVLine(int16_t x, int16_t y, int16_t h, uint16_t color),
+         drawFastHLine(int16_t x, int16_t y, int16_t w, uint16_t color),
+         fillRect(int16_t x, int16_t y, int16_t w, int16_t h,
+           uint16_t color),
+         setRotation(uint8_t r),
+         invertDisplay(boolean i);
   uint16_t color565(uint8_t r, uint8_t g, uint8_t b);
 
-  void setBufferPixel(uint16_t x, uint16_t y, uint8_t palColor);
+  void setPixel(uint16_t x, uint16_t y, uint8_t palColor);
   void fillBuffer(uint8_t pal);
   void writeBuffer();
+  uint16_t getScreenWidth();
+  uint16_t getScreenHeight();
 
   /* These are not for current use, 8-bit protocol only! */
   uint8_t  readdata(void),
@@ -163,8 +168,10 @@ class Adafruit_ILI9341 : public Adafruit_GFX {
   uint8_t  spiread(void);
 
  private:
-  uint16_t palette[16] = {ILI9341_BLACK,ILI9341_NAVY,ILI9341_DARKCYAN,ILI9341_DARKGREEN,ILI9341_MAROON,ILI9341_PURPLE,ILI9341_OLIVE,ILI9341_LIGHTGREY,ILI9341_DARKGREY,ILI9341_BLUE        ,ILI9341_GREEN       ,ILI9341_CYAN        ,ILI9341_RED         ,ILI9341_MAGENTA     ,ILI9341_YELLOW      ,ILI9341_WHITE};
-  uint8_t buffer[320 * 240 / 2];
+  
+
+  uint16_t palette[PALETTE_COLORS] = {ILI9341_BLACK,ILI9341_NAVY,ILI9341_DARKCYAN,ILI9341_DARKGREEN,ILI9341_MAROON,ILI9341_PURPLE,ILI9341_OLIVE,ILI9341_LIGHTGREY,ILI9341_DARKGREY,ILI9341_BLUE,ILI9341_GREEN,ILI9341_CYAN,ILI9341_RED         ,ILI9341_MAGENTA     ,ILI9341_YELLOW      ,ILI9341_WHITE};
+  uint8_t buffer[320 * 240 / (8 / BITS_PER_PIXEL)];
   uint8_t  tabcolor;
 
 
